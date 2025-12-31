@@ -1,0 +1,54 @@
+# =========================
+# Node.js
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Environment variables
+# =========================
+.env
+*.env
+
+
+# =========================
+# =========================
+config/google.json
+services/
+testYouTubeAuth.js
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+
+Reels-Automation.env
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Editor / IDE
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Build / temp
+# =========================
+dist/
+build/
+.tmp/
+.cache/
+
+# =========================
+# Optional
+# =========================
+coverage/

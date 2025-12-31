@@ -1,0 +1,50 @@
+
+
+<h1 class="text-3xl text-green-400 font-bold mb-4">
+  Ready to Upload on Instagram
+</h1>
+
+<% if (!reel) { %>
+
+<div class="text-center text-xl text-green-400">
+  🎉 No pending reels to upload
+</div>
+
+<% } else { %> 
+
+<video controls class="rounded border-2 border-cyan-400 mb-4">
+
+   <source src="<%= mainUrl %>" type="video/mp4">
+  <source src="<%= fallbackUrl %>" type="video/mp4">
+</video>
+
+<p><b>📁 File:</b> <%= reel.fileName %></p>
+<p><b>📝 Caption:</b> <%= reel.caption %></p>
+
+<button onclick="uploadNow()" 
+  class="mt-4 bg-green-500 px-6 py-3 rounded text-lg hover:bg-green-400">
+  🚀 Upload to Instagram
+</button>
+
+<pre id="log" class="bg-black text-green-400 p-4 mt-4 rounded h-40 overflow-auto">
+Waiting...
+</pre>
+
+<script>
+async function uploadNow(){
+  const log=document.getElementById("log");
+  log.innerText="Uploading...";
+
+  const res=await fetch("/upload",{method:"POST"});
+  const data=await res.json();
+
+  if(data.error){
+    log.innerText="❌ "+data.error;
+    return;
+  }
+
+  log.innerText="✅ Successfully Posted! Refreshing...";
+  setTimeout(()=>location.reload(),2000);
+}
+</script>
+<% } %>

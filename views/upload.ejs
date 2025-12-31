@@ -1,0 +1,32 @@
+
+
+<h1 class="text-3xl text-cyan-400 mb-4 font-bold">Upload New Reel</h1>
+
+<form action="/upload-cloudinary" method="POST" enctype="multipart/form-data"
+  class="bg-slate-800 p-6 rounded-xl shadow-xl">
+
+  <label class="block mb-2">🎥 Select Video</label>
+  <input type="file" name="video" accept="video/mp4"
+    class="p-2 mb-4 w-full bg-slate-700 rounded" required>
+
+  <label class="block mb-2">📝 Caption</label>
+  <input name="caption"
+    class="p-2 mb-4 w-full bg-slate-700 rounded" required>
+
+    
+  <label class="block mb-2">🎯 Title (For YouTube Shorts)</label>
+<input type="text" name="title"
+       class="p-2 mb-4 w-full bg-slate-700 rounded"
+       placeholder="Enter YouTube Title">
+
+
+
+
+  <label class="block mb-2">📄 Description</label>
+  <textarea name="description"
+    class="p-2 h-28 w-full bg-slate-700 rounded"></textarea>
+
+  <button class="bg-cyan-500 px-6 py-3 rounded text-lg hover:bg-cyan-400">
+    Upload & Save
+  </button>
+</form>
