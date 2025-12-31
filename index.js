@@ -254,37 +254,135 @@ function getYouTubeClient() {
 
 // Youtube upload route
 
-app.post("/upload-youtube", async (req, res) => {
+// app.post("/upload-youtube", async (req, res) => {
 
+//   try {
+//     const short = await getNextYouTubeShort();
+//     if (!short) return res.json({ error: "No Youtube Shorts pending" });
+
+//     // 1. Download Video from Cloudinary to Temp File
+//     const videoUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/${short.fileName}`;
+//     const tempFilePath = path.join(__dirname, 'uploads', `temp_${short.fileName}`);
+
+//     console.log(`📥 Downloading video from: ${videoUrl}`);
+//     const writer = fs.createWriteStream(tempFilePath);
+//     const response = await axios({
+//       url: videoUrl,
+//       method: 'GET',
+//       responseType: 'stream'
+//     });
+
+//     response.data.pipe(writer);
+
+//     // Wait for download to finish
+//     await new Promise((resolve, reject) => {
+//       writer.on('finish', resolve);
+//       writer.on('error', reject);
+//     });
+
+//     // 2. Upload to YouTube
+//     const youtube = getYouTubeClient();
+
+//     console.log("🚀 Uploading to YouTube...");
+//     const fileSize = fs.statSync(tempFilePath).size;
+
+//     const resYoutube = await youtube.videos.insert({
+//       part: "snippet,status",
+//       requestBody: {
+//         snippet: {
+//           title: short.title,
+//           description: short.description + "\n\n#Shorts",
+//           tags: ["Shorts", "YouTubeShorts"],
+//           categoryId: "22" // People & Blogs
+//         },
+//         status: {
+//           privacyStatus: "public",   // or "private" / "unlisted"
+//           selfDeclaredMadeForKids: false,
+//         }
+//       },
+//       media: {
+//         body: fs.createReadStream(tempFilePath),
+//       }
+//     });
+
+//     console.log(`✅ Upload Complete! Video ID: ${resYoutube.data.id}`);
+
+//     // 3. Cleanup & Mark as Posted
+//     fs.unlinkSync(tempFilePath); // Delete temp file
+//     await markYouTubePosted(short.rowIndex);
+
+//     res.send(`
+//       <script>
+//         alert("YouTube Short Posted Successfully! Video ID: ${resYoutube.data.id}");
+//         window.location.href='/post-shorts';
+//       </script>
+//     `);
+
+//   } catch (err) {
+//     console.error(err);
+//     res.send("❌ Error: " + (err.message || JSON.stringify(err)));
+//   }
+// });
+
+
+
+
+app.post("/upload-youtube", async (req, res) => {
   try {
     const short = await getNextYouTubeShort();
     if (!short) return res.json({ error: "No Youtube Shorts pending" });
 
-    // 1. Download Video from Cloudinary to Temp File
-    const videoUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/${short.fileName}`;
-    const tempFilePath = path.join(__dirname, 'uploads', `temp_${short.fileName}`);
+    // ------------------- Build URLs -------------------
+    const mainUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/${short.fileName}`;
+    const fallbackUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/v1766324641/Reels/${short.fileName}`;
 
-    console.log(`📥 Downloading video from: ${videoUrl}`);
+    const tempFilePath = path.join(__dirname, "uploads", `temp_${short.fileName}`);
     const writer = fs.createWriteStream(tempFilePath);
-    const response = await axios({
-      url: videoUrl,
-      method: 'GET',
-      responseType: 'stream'
-    });
 
-    response.data.pipe(writer);
+    let downloadUrl = mainUrl;
+    console.log("📥 Trying main video URL:", downloadUrl);
 
-    // Wait for download to finish
-    await new Promise((resolve, reject) => {
-      writer.on('finish', resolve);
-      writer.on('error', reject);
-    });
+    // ------------------- Try MAIN URL first -------------------
+    try {
+      const response = await axios({
+        url: downloadUrl,
+        method: "GET",
+        responseType: "stream"
+      });
 
-    // 2. Upload to YouTube
+      response.data.pipe(writer);
+
+      await new Promise((resolve, reject) => {
+        writer.on("finish", resolve);
+        writer.on("error", reject);
+      });
+
+    } catch (error) {
+      console.log("⚠️ Main URL failed. Trying fallback...");
+
+      // ------------------- Try FALLBACK -------------------
+      downloadUrl = fallbackUrl;
+      const fallbackWriter = fs.createWriteStream(tempFilePath);
+
+      const response2 = await axios({
+        url: downloadUrl,
+        method: "GET",
+        responseType: "stream"
+      });
+
+      response2.data.pipe(fallbackWriter);
+
+      await new Promise((resolve, reject) => {
+        fallbackWriter.on("finish", resolve);
+        fallbackWriter.on("error", reject);
+      });
+    }
+
+    console.log(`✅ Downloaded successfully from: ${downloadUrl}`);
+
+    // ------------------- Upload To YouTube -------------------
     const youtube = getYouTubeClient();
-
     console.log("🚀 Uploading to YouTube...");
-    const fileSize = fs.statSync(tempFilePath).size;
 
     const resYoutube = await youtube.videos.insert({
       part: "snippet,status",
@@ -293,22 +391,22 @@ app.post("/upload-youtube", async (req, res) => {
           title: short.title,
           description: short.description + "\n\n#Shorts",
           tags: ["Shorts", "YouTubeShorts"],
-          categoryId: "22" // People & Blogs
+          categoryId: "22"
         },
         status: {
-          privacyStatus: "public",   // or "private" / "unlisted"
-          selfDeclaredMadeForKids: false,
+          privacyStatus: "public",
+          selfDeclaredMadeForKids: false
         }
       },
       media: {
-        body: fs.createReadStream(tempFilePath),
+        body: fs.createReadStream(tempFilePath)
       }
     });
 
     console.log(`✅ Upload Complete! Video ID: ${resYoutube.data.id}`);
 
-    // 3. Cleanup & Mark as Posted
-    fs.unlinkSync(tempFilePath); // Delete temp file
+    // Cleanup + mark posted
+    fs.unlinkSync(tempFilePath);
     await markYouTubePosted(short.rowIndex);
 
     res.send(`
@@ -323,7 +421,6 @@ app.post("/upload-youtube", async (req, res) => {
     res.send("❌ Error: " + (err.message || JSON.stringify(err)));
   }
 });
-
 
 
 
