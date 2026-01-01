@@ -462,17 +462,111 @@ app.post("/upload-cloudinary", upload.single("video"), async (req, res) => {
 
 
 // ---------- Upload Reel to Instagram ----------
+// app.post("/upload", async (req, res) => {
+//   try {
+//     const reel = await getNextReel();
+//     if (!reel) return res.json({ error: "No reels pending" });
+
+//     const videoUrl =
+//       `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/${reel.fileName}`;
+
+//     // Create reel container
+//     const createRes = await axios.post(
+//       "https://graph.facebook.com/v23.0/" + process.env.IG_ID + "/media",
+//       {
+//         video_url: videoUrl,
+//         caption: reel.caption,
+//         media_type: "REELS",
+//         access_token: process.env.META_TOKEN,
+//       }
+//     );
+
+//     const creationId = createRes.data.id;
+
+//     // Polling logic: Check status until FINISHED
+//     let status = "IN_PROGRESS";
+//     let attempts = 0;
+
+//     while (status !== "FINISHED") {
+//       if (attempts >= 30) { // 30 * 5s = 2.5 minutes timeout
+//         throw new Error("Processing timeout: Video took too long to process on Instagram.");
+//       }
+
+//       await new Promise(r => setTimeout(r, 5000)); // Wait 5 seconds
+//       attempts++;
+
+//       const statusRes = await axios.get(
+//         `https://graph.facebook.com/v23.0/${creationId}`,
+//         {
+//           params: {
+//             fields: "status_code",
+//             access_token: process.env.META_TOKEN
+//           }
+//         }
+//       );
+
+//       status = statusRes.data.status_code;
+//       console.log(`⏳ Processing Status: ${status} (Attempt ${attempts})`);
+
+//       if (status === "ERROR" || status === "EXPIRED") {
+//         throw new Error("Instagram Processing Failed: " + status);
+//       }
+//     }
+
+//     // Publish Reel
+//     const publishRes = await axios.post(
+//       "https://graph.facebook.com/v23.0/" + process.env.IG_ID + "/media_publish",
+//       {
+//         creation_id: creationId,
+//         access_token: process.env.META_TOKEN,
+//       }
+//     );
+
+//     await markAsPosted(reel.rowIndex);
+
+//     res.json({
+//       success: true,
+//       creationId,
+//       postId: publishRes.data.id,
+//     });
+
+//   } catch (err) {
+//     console.log(err.response?.data || err.message);
+//     res.json({
+//       error: err.response?.data?.error?.message || err.message
+//     });
+//   }
+// });
+
+
 app.post("/upload", async (req, res) => {
   try {
     const reel = await getNextReel();
     if (!reel) return res.json({ error: "No reels pending" });
 
-    const videoUrl =
-      `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/${reel.fileName}`;
+    // ------------------- Build URLs -------------------
+    const mainUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/${reel.fileName}`;
+    const fallbackUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/v1766324641/Reels/${reel.fileName}`;
 
-    // Create reel container
+    let videoUrl = mainUrl;
+    console.log("🎥 Trying main Cloudinary URL for Instagram:", videoUrl);
+
+    // ------------------- Try MAIN URL first -------------------
+    try {
+      await axios.head(videoUrl);
+      console.log("✅ Main URL is valid!");
+    } catch (err) {
+      console.log("⚠️ Main URL failed, switching to fallback...");
+      videoUrl = fallbackUrl;
+
+      // Double check fallback exists
+      await axios.head(videoUrl);
+      console.log("✅ Fallback URL is valid!");
+    }
+
+    // ------------------- Create IG Reel Container -------------------
     const createRes = await axios.post(
-      "https://graph.facebook.com/v23.0/" + process.env.IG_ID + "/media",
+      `https://graph.facebook.com/v23.0/${process.env.IG_ID}/media`,
       {
         video_url: videoUrl,
         caption: reel.caption,
@@ -483,16 +577,16 @@ app.post("/upload", async (req, res) => {
 
     const creationId = createRes.data.id;
 
-    // Polling logic: Check status until FINISHED
+    // ------------------- Poll Status Until FINISHED -------------------
     let status = "IN_PROGRESS";
     let attempts = 0;
 
     while (status !== "FINISHED") {
-      if (attempts >= 30) { // 30 * 5s = 2.5 minutes timeout
+      if (attempts >= 30) {
         throw new Error("Processing timeout: Video took too long to process on Instagram.");
       }
 
-      await new Promise(r => setTimeout(r, 5000)); // Wait 5 seconds
+      await new Promise(r => setTimeout(r, 5000));
       attempts++;
 
       const statusRes = await axios.get(
@@ -513,9 +607,9 @@ app.post("/upload", async (req, res) => {
       }
     }
 
-    // Publish Reel
+    // ------------------- Publish Reel -------------------
     const publishRes = await axios.post(
-      "https://graph.facebook.com/v23.0/" + process.env.IG_ID + "/media_publish",
+      `https://graph.facebook.com/v23.0/${process.env.IG_ID}/media_publish`,
       {
         creation_id: creationId,
         access_token: process.env.META_TOKEN,
@@ -528,6 +622,7 @@ app.post("/upload", async (req, res) => {
       success: true,
       creationId,
       postId: publishRes.data.id,
+      videoUrlUsed: videoUrl
     });
 
   } catch (err) {
