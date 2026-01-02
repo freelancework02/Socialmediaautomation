@@ -338,14 +338,15 @@ app.post("/upload-youtube", async (req, res) => {
 
 
     // Folder Directory creation 
-    const tempDir = "/tmp/temp_Reels";
+// ---------------- TEMP DIRECTORY ----------------
+const cleanName = path.basename(short.fileName);   // <-- IMPORTANT
+const tempDir = "/tmp/temp_Reels";
 
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir, { recursive: true });
-} 
+fs.mkdirSync(tempDir, { recursive: true });
 
-const tempFilePath = path.join(tempDir, `temp_${short.fileName}`);
-    const writer = fs.createWriteStream(tempFilePath);
+const tempFilePath = path.join(tempDir, `temp_${cleanName}`);
+const writer = fs.createWriteStream(tempFilePath);
+
 
     let downloadUrl = mainUrl;
     console.log("📥 Trying main video URL:", downloadUrl);
