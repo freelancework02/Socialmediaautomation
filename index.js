@@ -336,11 +336,13 @@ app.post("/upload-youtube", async (req, res) => {
     const mainUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/${short.fileName}`;
     const fallbackUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/v1766324641/Reels/${short.fileName}`;
 
+
+    // Folder Directory creation 
     const tempDir = "/tmp/temp_Reels";
 
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
-}
+} 
 
 const tempFilePath = path.join(tempDir, `temp_${short.fileName}`);
     const writer = fs.createWriteStream(tempFilePath);
