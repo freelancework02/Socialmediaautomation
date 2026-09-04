@@ -1,32 +1,63 @@
+<div class="max-w-2xl mx-auto">
+  <div class="mb-6">
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-white">Upload New Reel</h1>
+    <p class="text-slate-400 mt-1 text-sm sm:text-base">Add a video to the queue — it'll be posted to Instagram &amp; YouTube from the Next Upload page.</p>
+  </div>
 
+  <form action="/upload-cloudinary" method="POST" enctype="multipart/form-data"
+    class="rounded-2xl border border-border bg-panel p-5 sm:p-8 shadow-glow space-y-5">
 
-<h1 class="text-3xl text-cyan-400 mb-4 font-bold">Upload New Reel</h1>
+    <div>
+      <label class="block mb-2 text-sm font-semibold text-slate-300">🎥 Video File</label>
+      <label for="videoInput"
+        class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-accent hover:bg-white/5 transition">
+        <span class="text-3xl">📁</span>
+        <span id="fileLabel" class="text-slate-400 text-sm">Click to choose an MP4 file, or drag it here</span>
+      </label>
+      <input id="videoInput" type="file" name="video" accept="video/mp4" required class="hidden">
+    </div>
 
-<form action="/upload-cloudinary" method="POST" enctype="multipart/form-data"
-  class="bg-slate-800 p-6 rounded-xl shadow-xl">
+    <div>
+      <label class="block mb-2 text-sm font-semibold text-slate-300">📝 Caption (Instagram)</label>
+      <input name="caption" required placeholder="Write a catchy caption..."
+        class="w-full p-3 rounded-xl bg-panel2 border border-border focus:border-accent focus:ring-1 focus:ring-accent outline-none transition placeholder:text-slate-500">
+    </div>
 
-  <label class="block mb-2">🎥 Select Video</label>
-  <input type="file" name="video" accept="video/mp4"
-    class="p-2 mb-4 w-full bg-slate-700 rounded" required>
+    <div>
+      <label class="block mb-2 text-sm font-semibold text-slate-300">🎯 Title (YouTube Shorts)</label>
+      <input type="text" name="title" placeholder="Enter YouTube title"
+        class="w-full p-3 rounded-xl bg-panel2 border border-border focus:border-accent focus:ring-1 focus:ring-accent outline-none transition placeholder:text-slate-500">
+    </div>
 
-  <label class="block mb-2">📝 Caption</label>
-  <input name="caption"
-    class="p-2 mb-4 w-full bg-slate-700 rounded" required>
+    <div>
+      <label class="block mb-2 text-sm font-semibold text-slate-300">📄 Description</label>
+      <textarea name="description" rows="4" placeholder="Optional description..."
+        class="w-full p-3 rounded-xl bg-panel2 border border-border focus:border-accent focus:ring-1 focus:ring-accent outline-none transition placeholder:text-slate-500"></textarea>
+    </div>
 
-    
-  <label class="block mb-2">🎯 Title (For YouTube Shorts)</label>
-<input type="text" name="title"
-       class="p-2 mb-4 w-full bg-slate-700 rounded"
-       placeholder="Enter YouTube Title">
+    <button type="submit" id="submitBtn"
+      class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-accent to-accent2 text-slate-900 font-bold px-6 py-3 rounded-xl hover:opacity-90 transition">
+      ⬆️ Upload &amp; Save to Queue
+    </button>
+  </form>
+</div>
 
+<script>
+  const videoInput = document.getElementById('videoInput');
+  const fileLabel = document.getElementById('fileLabel');
+  const form = document.querySelector('form');
+  const submitBtn = document.getElementById('submitBtn');
 
+  videoInput.addEventListener('change', () => {
+    if (videoInput.files.length) {
+      fileLabel.textContent = '✅ ' + videoInput.files[0].name;
+    } else {
+      fileLabel.textContent = 'Click to choose an MP4 file, or drag it here';
+    }
+  });
 
-
-  <label class="block mb-2">📄 Description</label>
-  <textarea name="description"
-    class="p-2 h-28 w-full bg-slate-700 rounded"></textarea>
-
-  <button class="bg-cyan-500 px-6 py-3 rounded text-lg hover:bg-cyan-400">
-    Upload & Save
-  </button>
-</form>
+  form.addEventListener('submit', () => {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Uploading...';
+  });
+</script>

@@ -1,25 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Instagram Automation</title>
+  <meta charset="UTF-8">
+  <title>Reels Automation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            base: '#0b1120',
+            panel: '#111a2e',
+            panel2: '#161f36',
+            border: '#233046',
+            accent: '#22d3ee',
+            accent2: '#a855f7',
+          },
+          boxShadow: {
+            glow: '0 0 0 1px rgba(34,211,238,0.15), 0 8px 30px -8px rgba(34,211,238,0.25)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: radial-gradient(1200px 600px at 50% -10%, #16213f 0%, #0b1120 60%); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: #233046; border-radius: 8px; }
+  </style>
 </head>
 
-<body class="bg-slate-900 text-white">
+<body class="min-h-screen font-sans text-slate-200">
 
-  <nav class="bg-slate-800 p-4 flex gap-6 justify-center text-lg font-semibold">
-    <a href="/upload" class="hover:text-cyan-400">📤 Upload Videos</a>
-    <a href="/dashboard" class="hover:text-cyan-400">📊 Dashboard</a>
-    <a href="/post" class="hover:text-cyan-400">🚀 Post to Instagram</a>
-    <a href="/post-shorts" class="hover:text-cyan-400">🚀 Post to YouTube Shorts</a>
-  </nav>
+  <header class="sticky top-0 z-40 border-b border-border/80 bg-base/80 backdrop-blur">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="/dashboard" class="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+          <span class="text-2xl">🎬</span>
+          <span class="bg-gradient-to-r from-accent to-accent2 bg-clip-text text-transparent">Reels Automation</span>
+        </a>
 
-  <div class="max-w-4xl mx-auto p-6">
+        <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
+          <a href="/dashboard" class="px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition">📊 Dashboard</a>
+          <a href="/next" class="px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition">🚀 Next Upload</a>
+          <a href="/upload" class="px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition">📤 Upload Video</a>
+        </nav>
+
+        <button id="navToggle" aria-label="Toggle menu" class="md:hidden w-10 h-10 grid place-items-center rounded-lg hover:bg-white/5">
+          <svg id="navIconOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="navIconClose" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <nav id="navMobile" class="hidden md:hidden pb-4 flex flex-col gap-1 text-sm font-medium">
+        <a href="/dashboard" class="px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5">📊 Dashboard</a>
+        <a href="/next" class="px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5">🚀 Next Upload</a>
+        <a href="/upload" class="px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5">📤 Upload Video</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <%- body %>
-  </div>
+  </main>
 
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navMobile = document.getElementById('navMobile');
+    const iconOpen = document.getElementById('navIconOpen');
+    const iconClose = document.getElementById('navIconClose');
+    navToggle?.addEventListener('click', () => {
+      navMobile.classList.toggle('hidden');
+      iconOpen.classList.toggle('hidden');
+      iconClose.classList.toggle('hidden');
+    });
+  </script>
 </body>
 
 </html>
