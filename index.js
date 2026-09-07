@@ -68,6 +68,22 @@ async function appendRow(fileName, caption, description, title) {
   });
 }
 
+// Append direct upload history row with exact post statuses
+async function appendDirectHistoryRow(fileName, caption, description, title, igStatus, ytStatus) {
+  try {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: process.env.SHEET_ID,
+      range: "Sheet1!A:F",
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [[fileName, caption, description, title, igStatus || "Skipped", ytStatus || "Skipped"]]
+      }
+    });
+  } catch (err) {
+    console.warn("Could not log direct upload to Google Sheets:", err.message);
+  }
+}
+
 
 async function getNextReel() {
   const rows = await getSheetData();
@@ -302,16 +318,353 @@ async function uploadShortToYouTube(short) {
 }
 
 
+// ---------- Standalone Direct Upload Helpers ----------
+
+async function directUploadToCloudinary(filePath, originalName) {
+  const cleanName = (originalName || "direct_reel").replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_");
+  const uniqueId = `${cleanName}_${Date.now()}`;
+  const uploaded = await cloudinary.uploader.upload(filePath, {
+    resource_type: "video",
+    folder: "DirectUploads",
+    public_id: uniqueId,
+    overwrite: true,
+  });
+  return {
+    secureUrl: uploaded.secure_url,
+    publicId: uploaded.public_id,
+    fileName: `DirectUploads/${uniqueId}.${uploaded.format}`,
+  };
+}
+
+async function directUploadToYouTube({ filePath, title, description, privacyStatus = "public" }) {
+  const youtube = getYouTubeClient();
+
+  let finalTitle = (title || "Untitled Short").trim();
+  if (finalTitle.length > 100) finalTitle = finalTitle.substring(0, 97) + "...";
+
+  let finalDescription = (description || "").trim();
+  if (!finalDescription.includes("#Shorts")) {
+    finalDescription = (finalDescription + "\n\n#Shorts #YouTubeShorts").trim();
+  }
+
+  const validPrivacy = ["public", "unlisted", "private"].includes(privacyStatus) ? privacyStatus : "public";
+
+  const resYoutube = await youtube.videos.insert({
+    part: "snippet,status",
+    requestBody: {
+      snippet: {
+        title: finalTitle,
+        description: finalDescription,
+        tags: ["Shorts", "YouTubeShorts", "Viral", "Islamic"],
+        categoryId: "22",
+      },
+      status: {
+        privacyStatus: validPrivacy,
+        selfDeclaredMadeForKids: false,
+      },
+    },
+    media: {
+      body: fs.createReadStream(filePath),
+    },
+  });
+
+  return {
+    success: true,
+    videoId: resYoutube.data.id,
+    url: `https://youtube.com/shorts/${resYoutube.data.id}`,
+  };
+}
+
+async function directUploadToInstagram({ videoUrl, caption, onLog = () => {} }) {
+  try {
+    onLog("Initializing Instagram Reels media container via Graph API v23.0...");
+    const createRes = await axios.post(
+      `https://graph.facebook.com/v23.0/${process.env.IG_ID}/media`,
+      {
+        video_url: videoUrl,
+        caption: caption || "",
+        media_type: "REELS",
+        access_token: process.env.META_TOKEN,
+      }
+    );
+
+    const creationId = createRes.data.id;
+    onLog(`Container created (ID: ${creationId}). Waiting for Instagram to process video...`);
+
+    let status = "IN_PROGRESS";
+    let attempts = 0;
+
+    while (status !== "FINISHED") {
+      if (attempts >= 36) {
+        throw new Error("Instagram video processing timed out (video took over 3 minutes).");
+      }
+
+      await new Promise(r => setTimeout(r, 5000));
+      attempts++;
+      onLog(`Transcoding on Instagram servers... check ${attempts}/36 (Status: ${status})`);
+
+      const statusRes = await axios.get(
+        `https://graph.facebook.com/v23.0/${creationId}`,
+        {
+          params: {
+            fields: "status_code",
+            access_token: process.env.META_TOKEN,
+          },
+        }
+      );
+
+      status = statusRes.data.status_code;
+
+      if (status === "ERROR" || status === "EXPIRED") {
+        throw new Error("Instagram video processing failed with status: " + status);
+      }
+    }
+
+    onLog("Instagram video processing finished! Publishing Reel live...");
+    const publishRes = await axios.post(
+      `https://graph.facebook.com/v23.0/${process.env.IG_ID}/media_publish`,
+      {
+        creation_id: creationId,
+        access_token: process.env.META_TOKEN,
+      }
+    );
+
+    const postId = publishRes.data.id;
+    let permalink = null;
+    try {
+      const permalinkRes = await axios.get(`https://graph.facebook.com/v23.0/${postId}`, {
+        params: {
+          fields: "permalink",
+          access_token: process.env.META_TOKEN,
+        },
+      });
+      permalink = permalinkRes.data?.permalink;
+    } catch (pErr) {
+      console.warn("Could not fetch IG permalink:", pErr.message);
+    }
+
+    return {
+      success: true,
+      postId,
+      permalink: permalink || `https://www.instagram.com/lightof_hadith02/reels/`,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      error: err.response?.data?.error?.message || err.message,
+    };
+  }
+}
+
+async function getConnectedProfiles() {
+  let igProfile = null;
+  let ytProfile = null;
+
+  try {
+    const igRes = await axios.get(`https://graph.facebook.com/v23.0/${process.env.IG_ID}`, {
+      params: {
+        fields: "id,username,name,followers_count,media_count,profile_picture_url",
+        access_token: process.env.META_TOKEN,
+      },
+      timeout: 4000,
+    });
+    igProfile = igRes.data;
+  } catch (igErr) {
+    console.warn("Could not fetch Instagram profile metrics:", igErr.message);
+  }
+
+  try {
+    const youtube = getYouTubeClient();
+    const ytRes = await youtube.channels.list({
+      part: "snippet,statistics",
+      mine: true,
+    });
+    if (ytRes.data.items && ytRes.data.items.length > 0) {
+      const item = ytRes.data.items[0];
+      ytProfile = {
+        id: item.id,
+        title: item.snippet.title,
+        customUrl: item.snippet.customUrl,
+        thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
+        subscribers: Number(item.statistics.subscriberCount).toLocaleString(),
+        views: Number(item.statistics.viewCount).toLocaleString(),
+        videoCount: Number(item.statistics.videoCount).toLocaleString(),
+      };
+    }
+  } catch (ytErr) {
+    console.warn("Could not fetch YouTube channel metrics:", ytErr.message);
+  }
+
+  return { igProfile, ytProfile };
+}
+
+
 // ---------- Routes ----------
 
 // Home redirect
 app.get("/", (req, res) => {
-  res.redirect("/upload");
+  res.redirect("/direct-uploader");
 });
 
-// Upload Page
+// Upload Page (Series Content Ingestion)
 app.get("/upload", (req, res) => {
   res.render("upload");
+});
+
+// Standalone Direct Uploader Page
+app.get("/direct-uploader", async (req, res) => {
+  try {
+    const { igProfile, ytProfile } = await getConnectedProfiles();
+    res.render("direct-uploader", { igProfile, ytProfile });
+  } catch (err) {
+    console.error("Direct uploader page error:", err);
+    res.render("direct-uploader", { igProfile: null, ytProfile: null });
+  }
+});
+
+app.get("/direct", (req, res) => res.redirect("/direct-uploader"));
+
+// Standalone Direct Upload API Endpoint (NDJSON Streaming Execution)
+app.post("/api/direct-upload", upload.single("video"), async (req, res) => {
+  res.setHeader("Content-Type", "application/x-ndjson");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  const sendMsg = (obj) => {
+    try {
+      res.write(JSON.stringify(obj) + "\n");
+    } catch (e) {
+      console.warn("Error writing NDJSON message:", e);
+    }
+  };
+
+  const file = req.file;
+  if (!file) {
+    sendMsg({ type: "complete", data: { success: false, error: "No video file received." } });
+    return res.end();
+  }
+
+  const {
+    title,
+    caption,
+    description,
+    dest_youtube,
+    dest_instagram,
+    privacyStatus,
+    logToSheet,
+  } = req.body;
+
+  const isYoutube = dest_youtube === "true" || dest_youtube === true;
+  const isInstagram = dest_instagram === "true" || dest_instagram === true;
+
+  if (!isYoutube && !isInstagram) {
+    if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+    sendMsg({ type: "complete", data: { success: false, error: "Please select at least one platform." } });
+    return res.end();
+  }
+
+  const results = {
+    fileName: file.originalname,
+    youtube: null,
+    instagram: null,
+    cloudinaryUrl: null,
+  };
+
+  try {
+    let cloudinaryData = null;
+
+    // Step 1: Cloudinary CDN Ingest (needed if Instagram is targeted)
+    if (isInstagram) {
+      sendMsg({ type: "stage", stage: "stageCloud", status: "active" });
+      sendMsg({ type: "log", message: "Uploading video to Cloudinary CDN for Instagram ingestion..." });
+
+      cloudinaryData = await directUploadToCloudinary(file.path, file.originalname);
+      results.cloudinaryUrl = cloudinaryData.secureUrl;
+
+      sendMsg({ type: "stage", stage: "stageCloud", status: "done" });
+      sendMsg({ type: "log", message: `✅ Cloudinary CDN ready: ${cloudinaryData.secureUrl}` });
+    }
+
+    // Step 2: Publish to YouTube Shorts
+    if (isYoutube) {
+      sendMsg({ type: "stage", stage: "stageYoutube", status: "active" });
+      sendMsg({ type: "log", message: "Publishing video directly to YouTube Shorts via YouTube Data API v3..." });
+
+      try {
+        const ytRes = await directUploadToYouTube({
+          filePath: file.path,
+          title,
+          description: description || caption,
+          privacyStatus,
+        });
+
+        results.youtube = ytRes;
+        sendMsg({ type: "stage", stage: "stageYoutube", status: "done" });
+        sendMsg({ type: "log", message: `✅ YouTube Short published successfully! ID: ${ytRes.videoId}` });
+      } catch (ytErr) {
+        console.error("Direct YouTube upload error:", ytErr);
+        const errMsg = ytErr.response?.data?.error?.message || ytErr.message;
+        results.youtube = { success: false, error: errMsg };
+        sendMsg({ type: "stage", stage: "stageYoutube", status: "error" });
+        sendMsg({ type: "log", message: `❌ YouTube Shorts error: ${errMsg}`, level: "error" });
+      }
+    }
+
+    // Step 3: Publish to Instagram Reels
+    if (isInstagram && cloudinaryData) {
+      sendMsg({ type: "stage", stage: "stageInstagram", status: "active" });
+      sendMsg({ type: "log", message: "Creating Instagram Reels container and submitting for video transcoding..." });
+
+      const igRes = await directUploadToInstagram({
+        videoUrl: cloudinaryData.secureUrl,
+        caption,
+        onLog: (msg) => sendMsg({ type: "log", message: msg }),
+      });
+
+      results.instagram = igRes;
+      if (igRes.success) {
+        sendMsg({ type: "stage", stage: "stageInstagram", status: "done" });
+        sendMsg({ type: "log", message: `✅ Instagram Reel published successfully! Post ID: ${igRes.postId}` });
+      } else {
+        sendMsg({ type: "stage", stage: "stageInstagram", status: "error" });
+        sendMsg({ type: "log", message: `❌ Instagram error: ${igRes.error}`, level: "error" });
+      }
+    }
+
+    // Step 4: Optional Sheet History Logging
+    if (logToSheet === "true" || logToSheet === true) {
+      try {
+        const sheetFileName = cloudinaryData ? cloudinaryData.fileName : file.originalname;
+        const igStatus = results.instagram?.success ? "Posted" : (isInstagram ? "Failed" : "Skipped");
+        const ytStatus = results.youtube?.success ? "Posted" : (isYoutube ? "Failed" : "Skipped");
+
+        await appendDirectHistoryRow(sheetFileName, caption || "", description || "", title || file.originalname, igStatus, ytStatus);
+        sendMsg({ type: "log", message: "Recorded direct upload record in Google Sheets history." });
+      } catch (sheetErr) {
+        console.warn("Sheet history append warning:", sheetErr.message);
+      }
+    }
+
+    // Overall outcome
+    const ytOk = !isYoutube || results.youtube?.success;
+    const igOk = !isInstagram || results.instagram?.success;
+    results.success = ytOk && igOk;
+
+    sendMsg({ type: "complete", data: results });
+  } catch (topErr) {
+    console.error("Direct upload top error:", topErr);
+    sendMsg({ type: "log", message: `❌ Process error: ${topErr.message}`, level: "error" });
+    sendMsg({ type: "complete", data: { success: false, error: topErr.message } });
+  } finally {
+    if (fs.existsSync(file.path)) {
+      try {
+        fs.unlinkSync(file.path);
+      } catch (unlinkErr) {
+        console.warn("Could not unlink temp file:", unlinkErr.message);
+      }
+    }
+    res.end();
+  }
 });
 
 // Dashboard Page with Live Social Media Profile Metrics & Queue List
@@ -341,44 +694,7 @@ app.get("/dashboard", async (req, res) => {
       };
     });
 
-    // 1. Fetch Instagram Profile Details
-    let igProfile = null;
-    try {
-      const igRes = await axios.get(`https://graph.facebook.com/v23.0/${process.env.IG_ID}`, {
-        params: {
-          fields: "id,username,name,followers_count,media_count,profile_picture_url",
-          access_token: process.env.META_TOKEN,
-        },
-        timeout: 4000,
-      });
-      igProfile = igRes.data;
-    } catch (igErr) {
-      console.warn("Could not fetch Instagram profile metrics:", igErr.message);
-    }
-
-    // 2. Fetch YouTube Channel Details
-    let ytProfile = null;
-    try {
-      const youtube = getYouTubeClient();
-      const ytRes = await youtube.channels.list({
-        part: "snippet,statistics",
-        mine: true,
-      });
-      if (ytRes.data.items && ytRes.data.items.length > 0) {
-        const item = ytRes.data.items[0];
-        ytProfile = {
-          id: item.id,
-          title: item.snippet.title,
-          customUrl: item.snippet.customUrl,
-          thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
-          subscribers: Number(item.statistics.subscriberCount).toLocaleString(),
-          views: Number(item.statistics.viewCount).toLocaleString(),
-          videoCount: Number(item.statistics.videoCount).toLocaleString(),
-        };
-      }
-    } catch (ytErr) {
-      console.warn("Could not fetch YouTube channel metrics:", ytErr.message);
-    }
+    const { igProfile, ytProfile } = await getConnectedProfiles();
 
     res.render("dashboard", {
       total,

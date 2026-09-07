@@ -44,10 +44,16 @@
     <p class="text-slate-500 mt-2 max-w-md mx-auto text-xs sm:text-sm md:text-base">
       There are no pending reels in your queue right now. You can upload new video assets to keep your campaign rolling.
     </p>
-    <a href="/upload" class="inline-flex mt-5 sm:mt-6 items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-md shadow-indigo-500/20 hover:shadow-lg transition text-sm">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
-      <span>Upload New Reel</span>
-    </a>
+    <div class="mt-5 sm:mt-6 flex items-center justify-center gap-3 flex-wrap">
+      <a href="/direct-uploader" class="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white font-bold px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-md shadow-pink-500/20 hover:shadow-lg transition text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span>Direct Uploader</span>
+      </a>
+      <a href="/upload" class="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-xs transition text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+        <span>Add to Series</span>
+      </a>
+    </div>
   </div>
 
   <!-- Main Active Reel Showcase Card -->

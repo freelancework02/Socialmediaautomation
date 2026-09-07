@@ -1,0 +1,750 @@
+<div class="max-w-6xl mx-auto space-y-6 sm:space-y-8">
+
+  <!-- Top Hero & Channel Connection Bar -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2 flex-wrap mb-1.5">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 text-pink-700 border border-pink-200/70">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-pink-600 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Direct Platform Uploader
+        </span>
+        <span class="text-xs font-semibold text-slate-400">Independent from Series Queue</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Direct Shorts &amp; Reels Publisher</h1>
+      <p class="text-slate-500 mt-1 text-xs sm:text-sm md:text-base">
+        Select an MP4 video, craft your title &amp; captions, and publish directly to YouTube Shorts, Instagram Reels, or both simultaneously in real time.
+      </p>
+    </div>
+
+    <!-- Quick Switch to Series Queue -->
+    <div class="flex items-center gap-2 shrink-0">
+      <a href="/next" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold hover:bg-slate-50 hover:border-slate-300 shadow-sm transition active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+        <span>Open Series Queue</span>
+      </a>
+      <a href="/upload" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold hover:bg-slate-50 hover:border-slate-300 shadow-sm transition active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+        <span>Add to Queue</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Connected Destination Indicators -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+    <!-- YouTube Live Channel Indicator -->
+    <div class="flex items-center gap-3 p-3 sm:p-4 rounded-2xl border border-red-100 bg-white shadow-card">
+      <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-900 truncate"><%= ytProfile ? ytProfile.title : 'YouTube Shorts' %></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span class="text-[10px] font-extrabold uppercase text-emerald-600">Ready</span>
+        </div>
+        <p class="text-[11px] text-slate-400 truncate"><%= ytProfile ? ytProfile.customUrl : 'Direct API Upload' %></p>
+      </div>
+    </div>
+
+    <!-- Instagram Live Account Indicator -->
+    <div class="flex items-center gap-3 p-3 sm:p-4 rounded-2xl border border-rose-100 bg-white shadow-card">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 via-pink-500 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-900 truncate"><%= igProfile ? igProfile.username : 'Instagram Reels' %></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span class="text-[10px] font-extrabold uppercase text-emerald-600">Ready</span>
+        </div>
+        <p class="text-[11px] text-slate-400 truncate"><%= igProfile ? ('@' + igProfile.username) : 'Direct Graph API' %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Interactive Form Card -->
+  <form id="directUploadForm" class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+
+    <!-- LEFT COLUMN: Video File Ingestion & Live Player (lg:col-span-5) -->
+    <div class="lg:col-span-5 space-y-4 sm:space-y-5">
+      
+      <!-- Video Upload Dropzone & Player -->
+      <div class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-card space-y-4">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+            <span>Video Source (MP4)</span>
+          </label>
+          <button type="button" id="clearVideoBtn" class="hidden text-xs text-rose-600 font-bold hover:underline flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span>Remove</span>
+          </button>
+        </div>
+
+        <!-- Initial Drag & Drop Zone -->
+        <label for="directVideoInput" id="dropZone"
+          class="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-indigo-200 bg-indigo-50/25 rounded-2xl p-6 sm:p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50 transition group">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+          </div>
+          <div>
+            <p class="text-slate-700 font-bold text-sm">Choose an MP4 video or drag &amp; drop</p>
+            <p class="text-[11px] text-slate-400 mt-1">Recommended: 9:16 Vertical (1080×1920) up to 60s</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-white border border-indigo-200 text-indigo-700 text-xs font-bold shadow-xs">
+            Browse File
+          </span>
+        </label>
+        <input id="directVideoInput" type="file" name="video" accept="video/mp4,video/*" required class="hidden">
+
+        <!-- Live HTML5 Video Player Container (Hidden until file selected) -->
+        <div id="videoPreviewContainer" class="hidden space-y-3">
+          <div class="w-full max-w-[280px] sm:max-w-[300px] mx-auto rounded-2xl overflow-hidden border-2 border-slate-200 bg-slate-950 shadow-elevated relative">
+            <video id="directVideoPlayer" controls playsinline class="w-full max-h-[420px] aspect-[9/16] object-contain mx-auto bg-black">
+              Your browser does not support video playback.
+            </video>
+          </div>
+
+          <!-- Video Metadata Badges -->
+          <div class="grid grid-cols-3 gap-2 text-center text-[11px]">
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-200/80">
+              <span class="text-slate-400 block font-semibold">Size</span>
+              <span id="metaFileSize" class="font-extrabold text-slate-800">-- MB</span>
+            </div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-200/80">
+              <span class="text-slate-400 block font-semibold">Duration</span>
+              <span id="metaDuration" class="font-extrabold text-slate-800">--s</span>
+            </div>
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-200/80">
+              <span class="text-slate-400 block font-semibold">Resolution</span>
+              <span id="metaResolution" class="font-extrabold text-slate-800">--</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Platform Destination Selectors -->
+      <div class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-card space-y-3">
+        <label class="text-xs font-bold uppercase tracking-wider text-slate-700 block">
+          Target Destinations
+        </label>
+
+        <!-- YouTube Shorts Toggle -->
+        <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-red-300 hover:bg-red-50/20 cursor-pointer transition select-none group">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-105 transition">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </div>
+            <div>
+              <span class="text-xs sm:text-sm font-bold text-slate-900 block">YouTube Shorts</span>
+              <span class="text-[11px] text-slate-400">Published to verified channel</span>
+            </div>
+          </div>
+          <input type="checkbox" id="platformYoutube" name="dest_youtube" checked
+            class="w-5 h-5 rounded text-red-600 focus:ring-red-500 border-slate-300 cursor-pointer accent-red-600">
+        </label>
+
+        <!-- Instagram Reels Toggle -->
+        <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-pink-300 hover:bg-pink-50/20 cursor-pointer transition select-none group">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-500 to-purple-600 text-white flex items-center justify-center group-hover:scale-105 transition shadow-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </div>
+            <div>
+              <span class="text-xs sm:text-sm font-bold text-slate-900 block">Instagram Reels</span>
+              <span class="text-[11px] text-slate-400">Published to live feed</span>
+            </div>
+          </div>
+          <input type="checkbox" id="platformInstagram" name="dest_instagram" checked
+            class="w-5 h-5 rounded text-pink-600 focus:ring-pink-500 border-slate-300 cursor-pointer accent-pink-600">
+        </label>
+
+        <!-- Destination Warning If None Checked -->
+        <p id="noDestWarning" class="hidden text-xs text-rose-600 font-bold bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+          ⚠️ Please select at least one platform (YouTube Shorts or Instagram Reels).
+        </p>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Metadata Builder & Publish Trigger (lg:col-span-7) -->
+    <div class="lg:col-span-7 space-y-4 sm:space-y-5">
+
+      <!-- YouTube Shorts Title Field -->
+      <div id="fieldSectionTitle" class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-card space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-600 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <span>YouTube Shorts Title</span>
+          </label>
+          <span id="titleCounter" class="text-xs font-mono font-semibold text-slate-400">0/100</span>
+        </div>
+        <input type="text" id="directTitle" name="title" maxlength="100"
+          placeholder="e.g. A Dua for When Everything Feels Heavy | #Shorts"
+          class="w-full p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 outline-none transition text-xs sm:text-sm font-semibold">
+        <div class="flex items-center gap-1.5 flex-wrap pt-1">
+          <span class="text-[11px] text-slate-400 font-medium">Quick helpers:</span>
+          <button type="button" onclick="appendTagToTitle('#Shorts')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-red-50 hover:text-red-700 text-slate-600 font-semibold transition">+ #Shorts</button>
+          <button type="button" onclick="appendTagToTitle('| Day 1')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold transition">+ | Day 1</button>
+          <button type="button" onclick="appendTagToTitle('🤲')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold transition">+ 🤲</button>
+        </div>
+      </div>
+
+      <!-- Instagram Caption Field -->
+      <div id="fieldSectionCaption" class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-card space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-rose-600 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <span>Instagram Caption (Hooks, Arabic Verses &amp; Tags)</span>
+          </label>
+          <span id="captionCounter" class="text-xs font-mono font-semibold text-slate-400">0 chars</span>
+        </div>
+        <textarea id="directCaption" name="caption" rows="5"
+          placeholder="Write your hooks, Quranic verses, translation, and hashtags here..."
+          class="w-full p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none transition text-xs sm:text-sm font-medium leading-relaxed"></textarea>
+        
+        <!-- Hashtag Quick Insert Pills -->
+        <div class="pt-1">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-[11px] text-slate-400 font-medium">Quick Tags:</span>
+            <button type="button" onclick="insertTag('#dua')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 font-semibold transition">#dua</button>
+            <button type="button" onclick="insertTag('#dailydua')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 font-semibold transition">#dailydua</button>
+            <button type="button" onclick="insertTag('#islamicreminder')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 font-semibold transition">#islamicreminder</button>
+            <button type="button" onclick="insertTag('#quran')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 font-semibold transition">#quran</button>
+            <button type="button" onclick="insertTag('#reels')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 font-semibold transition">#reels</button>
+            <button type="button" onclick="insertTag('#deen')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 font-semibold transition">#deen</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- YouTube Shorts Description Field -->
+      <div id="fieldSectionDescription" class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-card space-y-2">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>YouTube Shorts Description</span>
+          </label>
+          <button type="button" id="syncCaptionBtn" onclick="syncFromCaption()"
+            class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/60 transition flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
+            <span>Copy Caption</span>
+          </button>
+        </div>
+        <textarea id="directDescription" name="description" rows="3"
+          placeholder="Optional YouTube description. #Shorts is automatically appended."
+          class="w-full p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition text-xs sm:text-sm font-medium leading-relaxed"></textarea>
+      </div>
+
+      <!-- Advanced Options Accordion -->
+      <div class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-card space-y-4">
+        <button type="button" id="toggleAdvancedBtn" class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900 transition">
+          <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Advanced Settings</span>
+          </div>
+          <svg id="advancedChevron" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+
+        <div id="advancedContent" class="hidden pt-3 border-t border-slate-100 space-y-3.5">
+          <!-- YouTube Privacy Setting -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">YouTube Privacy Status</label>
+            <select name="privacyStatus" id="privacyStatus" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-800 outline-none focus:bg-white focus:border-indigo-500">
+              <option value="public" selected>Public (Immediate Live Visibility)</option>
+              <option value="unlisted">Unlisted (Accessible via direct link only)</option>
+              <option value="private">Private (Only channel owner can view)</option>
+            </select>
+          </div>
+
+          <!-- Google Sheets Logging Toggle -->
+          <label class="flex items-start gap-3 cursor-pointer select-none">
+            <input type="checkbox" name="logToSheet" id="logToSheet" checked
+              class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 mt-0.5 cursor-pointer accent-indigo-600">
+            <div>
+              <span class="text-xs font-bold text-slate-900 block">Log to Google Sheet History</span>
+              <span class="text-[11px] text-slate-400">Appends row as "Posted" without interfering with series queue order</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Master Publish Button -->
+      <div class="pt-1">
+        <button type="submit" id="publishBtn"
+          class="w-full inline-flex items-center justify-center gap-3 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white font-extrabold px-6 sm:px-8 py-4 rounded-xl text-base sm:text-lg shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span id="publishBtnText">Publish Directly Now</span>
+        </button>
+      </div>
+
+      <!-- Live Execution Progress & Terminal Panel -->
+      <div id="liveProgressContainer" class="hidden rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5 shadow-elevated space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Live Execution Terminal</span>
+          </div>
+          <span id="execElapsedTime" class="text-[11px] font-mono text-slate-400">00:00</span>
+        </div>
+
+        <!-- Visual Stage Tracker -->
+        <div id="stageTracker" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-bold uppercase tracking-wider">
+          <div id="stageUpload" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 flex items-center gap-1.5 truncate">
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 1. File Upload
+          </div>
+          <div id="stageCloud" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 flex items-center gap-1.5 truncate">
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 2. Cloudinary
+          </div>
+          <div id="stageYoutube" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 flex items-center gap-1.5 truncate">
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 3. YouTube
+          </div>
+          <div id="stageInstagram" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 flex items-center gap-1.5 truncate">
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> 4. Instagram
+          </div>
+        </div>
+
+        <!-- Terminal Log Messages -->
+        <div id="terminalLogs" class="font-mono text-xs text-emerald-400 space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- Published Success Showcase Card -->
+      <div id="successCard" class="hidden rounded-2xl border-2 border-emerald-500/80 bg-white p-5 sm:p-6 shadow-elevated space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-extrabold text-slate-900">Successfully Published!</h3>
+            <p class="text-xs text-slate-500">Your video is now live on your connected social channels.</p>
+          </div>
+        </div>
+
+        <!-- Links Grid -->
+        <div id="linksGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2"></div>
+
+        <!-- Action Reset -->
+        <div class="pt-2">
+          <button type="button" onclick="resetFormForNextUpload()"
+            class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm transition active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+            <span>Upload Another Video</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </form>
+
+</div>
+
+<!-- Floating Notification Toast -->
+<div id="directToast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-[92vw] sm:max-w-md px-5 sm:px-6 py-3.5 rounded-2xl shadow-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all"></div>
+
+<script>
+  // DOM Elements
+  const videoInput = document.getElementById('directVideoInput');
+  const dropZone = document.getElementById('dropZone');
+  const previewContainer = document.getElementById('videoPreviewContainer');
+  const videoPlayer = document.getElementById('directVideoPlayer');
+  const clearVideoBtn = document.getElementById('clearVideoBtn');
+  const metaFileSize = document.getElementById('metaFileSize');
+  const metaDuration = document.getElementById('metaDuration');
+  const metaResolution = document.getElementById('metaResolution');
+
+  const titleInput = document.getElementById('directTitle');
+  const titleCounter = document.getElementById('titleCounter');
+  const captionInput = document.getElementById('directCaption');
+  const captionCounter = document.getElementById('captionCounter');
+  const descriptionInput = document.getElementById('directDescription');
+
+  const platformYoutube = document.getElementById('platformYoutube');
+  const platformInstagram = document.getElementById('platformInstagram');
+  const noDestWarning = document.getElementById('noDestWarning');
+
+  const toggleAdvancedBtn = document.getElementById('toggleAdvancedBtn');
+  const advancedContent = document.getElementById('advancedContent');
+  const advancedChevron = document.getElementById('advancedChevron');
+
+  const form = document.getElementById('directUploadForm');
+  const publishBtn = document.getElementById('publishBtn');
+  const publishBtnText = document.getElementById('publishBtnText');
+  const liveProgressContainer = document.getElementById('liveProgressContainer');
+  const terminalLogs = document.getElementById('terminalLogs');
+  const execElapsedTime = document.getElementById('execElapsedTime');
+  const successCard = document.getElementById('successCard');
+  const linksGrid = document.getElementById('linksGrid');
+
+  let timerInterval = null;
+  let startTime = null;
+
+  // Toggle Advanced Settings
+  toggleAdvancedBtn?.addEventListener('click', () => {
+    advancedContent.classList.toggle('hidden');
+    advancedChevron.classList.toggle('rotate-180');
+  });
+
+  // Handle Video Selection & Instant Preview
+  videoInput?.addEventListener('change', handleFileChange);
+
+  function handleFileChange() {
+    if (!videoInput.files || !videoInput.files[0]) return;
+    const file = videoInput.files[0];
+
+    // Check type
+    if (!file.type.startsWith('video/')) {
+      showToast('Please select a valid video file (MP4 format).', 'error');
+      return;
+    }
+
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+    metaFileSize.textContent = `${sizeMb} MB`;
+
+    // Load preview via blob URL
+    const blobUrl = URL.createObjectURL(file);
+    videoPlayer.src = blobUrl;
+    videoPlayer.load();
+
+    videoPlayer.onloadedmetadata = () => {
+      const dur = Math.round(videoPlayer.duration);
+      metaDuration.textContent = `${dur}s`;
+      metaResolution.textContent = `${videoPlayer.videoWidth}×${videoPlayer.videoHeight}`;
+
+      // Pre-fill clean title from file name if title is empty
+      if (!titleInput.value.trim()) {
+        const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+        titleInput.value = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+        updateCounters();
+      }
+    };
+
+    dropZone.classList.add('hidden');
+    previewContainer.classList.remove('hidden');
+    clearVideoBtn.classList.remove('hidden');
+  }
+
+  // Clear Video Button
+  clearVideoBtn?.addEventListener('click', () => {
+    videoInput.value = '';
+    videoPlayer.pause();
+    videoPlayer.src = '';
+    dropZone.classList.remove('hidden');
+    previewContainer.classList.add('hidden');
+    clearVideoBtn.classList.add('hidden');
+  });
+
+  // Drag & drop highlight
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone?.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-indigo-500', 'bg-indigo-100/40');
+    });
+  });
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone?.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-indigo-500', 'bg-indigo-100/40');
+    });
+  });
+  dropZone?.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      videoInput.files = e.dataTransfer.files;
+      handleFileChange();
+    }
+  });
+
+  // Character Counters
+  function updateCounters() {
+    const titleLen = titleInput.value.length;
+    titleCounter.textContent = `${titleLen}/100`;
+    if (titleLen > 90) {
+      titleCounter.className = 'text-xs font-mono font-bold text-amber-500';
+    } else if (titleLen >= 100) {
+      titleCounter.className = 'text-xs font-mono font-bold text-rose-500';
+    } else {
+      titleCounter.className = 'text-xs font-mono font-semibold text-slate-400';
+    }
+
+    const captionLen = captionInput.value.length;
+    captionCounter.textContent = `${captionLen} chars`;
+  }
+  titleInput?.addEventListener('input', updateCounters);
+  captionInput?.addEventListener('input', updateCounters);
+
+  // Quick title tag appenders
+  function appendTagToTitle(tag) {
+    if (!titleInput.value.includes(tag)) {
+      titleInput.value = (titleInput.value.trim() + ' ' + tag).trim();
+      updateCounters();
+    }
+  }
+
+  // Quick caption tag inserter
+  function insertTag(tag) {
+    if (!captionInput.value.includes(tag)) {
+      captionInput.value = (captionInput.value.trim() + ' ' + tag).trim();
+      updateCounters();
+    }
+  }
+
+  // Sync Caption to Description
+  function syncFromCaption() {
+    descriptionInput.value = captionInput.value;
+    showToast('Copied Instagram caption to YouTube description!', 'success');
+  }
+
+  // Platform Validation
+  function checkPlatforms() {
+    const hasAny = platformYoutube.checked || platformInstagram.checked;
+    if (!hasAny) {
+      noDestWarning.classList.remove('hidden');
+      publishBtn.disabled = true;
+    } else {
+      noDestWarning.classList.add('hidden');
+      publishBtn.disabled = false;
+    }
+
+    // Dynamic button label
+    if (platformYoutube.checked && platformInstagram.checked) {
+      publishBtnText.textContent = 'Publish to YouTube & Instagram';
+    } else if (platformYoutube.checked) {
+      publishBtnText.textContent = 'Publish to YouTube Shorts Only';
+    } else if (platformInstagram.checked) {
+      publishBtnText.textContent = 'Publish to Instagram Reels Only';
+    }
+  }
+  platformYoutube?.addEventListener('change', checkPlatforms);
+  platformInstagram?.addEventListener('change', checkPlatforms);
+  checkPlatforms();
+
+  // Toast Notification
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('directToast');
+    toast.innerHTML = msg;
+    if (type === 'success') {
+      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-[92vw] sm:max-w-md px-5 sm:px-6 py-3.5 rounded-2xl shadow-xl font-bold text-xs sm:text-sm bg-slate-900 text-white border border-slate-700 flex items-center gap-2';
+    } else {
+      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-[92vw] sm:max-w-md px-5 sm:px-6 py-3.5 rounded-2xl shadow-xl font-bold text-xs sm:text-sm bg-rose-600 text-white shadow-rose-500/25 flex items-center gap-2';
+    }
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 5000);
+  }
+
+  // Terminal logging
+  function addLog(msg, type = 'info') {
+    const line = document.createElement('div');
+    const time = new Date().toLocaleTimeString();
+    line.className = type === 'error' ? 'text-rose-400' : type === 'warn' ? 'text-amber-400' : 'text-emerald-400';
+    line.textContent = `[${time}] ${msg}`;
+    terminalLogs.appendChild(line);
+    terminalLogs.scrollTop = terminalLogs.scrollHeight;
+  }
+
+  function setStageStatus(stageId, status) {
+    const el = document.getElementById(stageId);
+    if (!el) return;
+    if (status === 'active') {
+      el.className = 'p-2 rounded-lg bg-indigo-950/80 border border-indigo-500 text-indigo-300 flex items-center gap-1.5 truncate animate-pulse';
+    } else if (status === 'done') {
+      el.className = 'p-2 rounded-lg bg-emerald-950/80 border border-emerald-500 text-emerald-300 flex items-center gap-1.5 truncate';
+    } else if (status === 'error') {
+      el.className = 'p-2 rounded-lg bg-rose-950/80 border border-rose-500 text-rose-300 flex items-center gap-1.5 truncate';
+    } else if (status === 'skip') {
+      el.className = 'p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-600 flex items-center gap-1.5 truncate line-through';
+    }
+  }
+
+  // Timer
+  function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
+      const s = (elapsed % 60).toString().padStart(2, '0');
+      execElapsedTime.textContent = `${m}:${s}`;
+    }, 1000);
+  }
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  // Submit Handler
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!videoInput.files || !videoInput.files[0]) {
+      showToast('Please select a video file first.', 'error');
+      return;
+    }
+
+    if (!platformYoutube.checked && !platformInstagram.checked) {
+      showToast('Please select at least one platform.', 'error');
+      return;
+    }
+
+    // Lock UI
+    publishBtn.disabled = true;
+    publishBtn.innerHTML = `<span class="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Publishing Video...`;
+
+    liveProgressContainer.classList.remove('hidden');
+    terminalLogs.innerHTML = '';
+    successCard.classList.add('hidden');
+    linksGrid.innerHTML = '';
+
+    setStageStatus('stageUpload', 'active');
+    setStageStatus('stageCloud', platformInstagram.checked ? 'pending' : 'skip');
+    setStageStatus('stageYoutube', platformYoutube.checked ? 'pending' : 'skip');
+    setStageStatus('stageInstagram', platformInstagram.checked ? 'pending' : 'skip');
+
+    startTimer();
+    addLog(`Initiating direct upload job for "${videoInput.files[0].name}"...`);
+
+    const formData = new FormData();
+    formData.append('video', videoInput.files[0]);
+    formData.append('title', titleInput.value.trim());
+    formData.append('caption', captionInput.value.trim());
+    formData.append('description', descriptionInput.value.trim());
+    formData.append('dest_youtube', platformYoutube.checked ? 'true' : 'false');
+    formData.append('dest_instagram', platformInstagram.checked ? 'true' : 'false');
+    formData.append('privacyStatus', document.getElementById('privacyStatus')?.value || 'public');
+    formData.append('logToSheet', document.getElementById('logToSheet')?.checked ? 'true' : 'false');
+
+    try {
+      addLog('Uploading video payload to server...');
+      setStageStatus('stageUpload', 'done');
+
+      const response = await fetch('/api/direct-upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Stream NDJSON response from server
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+      let finalResult = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep last incomplete line in buffer
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const msg = JSON.parse(line);
+            handleStreamMessage(msg);
+            if (msg.type === 'complete') {
+              finalResult = msg.data;
+            }
+          } catch (pErr) {
+            console.warn('NDJSON parse error:', pErr, line);
+          }
+        }
+      }
+
+      stopTimer();
+
+      if (finalResult && finalResult.success) {
+        showToast('🎉 Direct upload completed successfully!', 'success');
+        renderSuccessCard(finalResult);
+      } else if (finalResult && !finalResult.success) {
+        showToast(finalResult.error || 'Upload encountered issues.', 'error');
+        publishBtn.disabled = false;
+        checkPlatforms();
+      } else {
+        showToast('Finished with unexpected output.', 'error');
+        publishBtn.disabled = false;
+        checkPlatforms();
+      }
+
+    } catch (err) {
+      stopTimer();
+      addLog('❌ Execution Error: ' + err.message, 'error');
+      showToast('Network / upload error: ' + err.message, 'error');
+      publishBtn.disabled = false;
+      checkPlatforms();
+    }
+  });
+
+  // Handle live streaming events
+  function handleStreamMessage(msg) {
+    if (msg.type === 'log') {
+      addLog(msg.message, msg.level || 'info');
+    } else if (msg.type === 'stage') {
+      setStageStatus(msg.stage, msg.status);
+    }
+  }
+
+  // Render clickable links in Success Card
+  function renderSuccessCard(result) {
+    successCard.classList.remove('hidden');
+    linksGrid.innerHTML = '';
+
+    if (result.youtube && result.youtube.success) {
+      const ytLink = `https://youtube.com/shorts/${result.youtube.videoId}`;
+      const el = document.createElement('a');
+      el.href = ytLink;
+      el.target = '_blank';
+      el.className = 'flex items-center justify-between p-4 rounded-xl border border-red-200 bg-red-50/50 hover:bg-red-50 hover:border-red-300 transition group shadow-xs';
+      el.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-red-900 block">Watch YouTube Short</span>
+            <span class="text-[11px] text-red-600 truncate block max-w-[170px] sm:max-w-xs">ID: ${result.youtube.videoId}</span>
+          </div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-600 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      `;
+      linksGrid.appendChild(el);
+    }
+
+    if (result.instagram && result.instagram.success) {
+      const igLink = result.instagram.permalink || `https://www.instagram.com/lightof_hadith02/reels/`;
+      const el = document.createElement('a');
+      el.href = igLink;
+      el.target = '_blank';
+      el.className = 'flex items-center justify-between p-4 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-50 hover:border-rose-300 transition group shadow-xs';
+      el.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-purple-600 text-white flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-rose-900 block">Watch Instagram Reel</span>
+            <span class="text-[11px] text-rose-600 truncate block max-w-[170px] sm:max-w-xs">Post ID: ${result.instagram.postId}</span>
+          </div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-rose-600 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      `;
+      linksGrid.appendChild(el);
+    }
+  }
+
+  // Reset form for next upload
+  function resetFormForNextUpload() {
+    videoInput.value = '';
+    videoPlayer.pause();
+    videoPlayer.src = '';
+    dropZone.classList.remove('hidden');
+    previewContainer.classList.add('hidden');
+    clearVideoBtn.classList.add('hidden');
+
+    titleInput.value = '';
+    captionInput.value = '';
+    descriptionInput.value = '';
+    updateCounters();
+
+    successCard.classList.add('hidden');
+    liveProgressContainer.classList.add('hidden');
+    publishBtn.disabled = false;
+    checkPlatforms();
+  }
+</script>
