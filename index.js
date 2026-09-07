@@ -141,15 +141,18 @@ async function getNextUpcomingReel() {
 
   for (let i = 0; i < rows.length; i++) {
     const [fileName, caption, description, title, igStatus, ytStatus] = rows[i];
-    if (igStatus !== "Posted" || ytStatus !== "Posted") {
+    const igClean = (igStatus || "").trim();
+    const ytClean = (ytStatus || "").trim();
+
+    if (igClean !== "Posted" || ytClean !== "Posted") {
       return {
         rowIndex: i + 2,
         fileName,
         caption,
         description,
         title,
-        igPosted: igStatus === "Posted",
-        ytPosted: ytStatus === "Posted",
+        igPosted: igClean === "Posted",
+        ytPosted: ytClean === "Posted",
       };
     }
   }
@@ -311,19 +314,84 @@ app.get("/upload", (req, res) => {
   res.render("upload");
 });
 
-// Dashboard Page
-// Dashboard Page
+// Dashboard Page with Live Social Media Profile Metrics & Queue List
 app.get("/dashboard", async (req, res) => {
-  const rows = await getSheetData();
+  try {
+    const rows = await getSheetData();
 
-  const total = rows.length;
+    const total = rows.length;
 
-  // Column E (index 4) is Instagram Status
-  // Column F (index 5) is YouTube Status
-  const instaPending = rows.filter(r => r[4] !== "Posted").length;
-  const ytPending = rows.filter(r => r[5] !== "Posted").length;
+    // Filter statuses cleanly with whitespace trimming
+    const instaPending = rows.filter(r => (r[4] || "").trim() !== "Posted").length;
+    const ytPending = rows.filter(r => (r[5] || "").trim() !== "Posted").length;
 
-  res.render("dashboard", { total, instaPending, ytPending });
+    const reelsList = rows.map((r, i) => {
+      const igStatus = (r[4] || "").trim() || "Pending";
+      const ytStatus = (r[5] || "").trim() || "Pending";
+      return {
+        rowIndex: i + 2,
+        fileName: r[0] || "",
+        caption: r[1] || "",
+        description: r[2] || "",
+        title: r[3] || "Untitled Reel",
+        igStatus,
+        ytStatus,
+        isFullyPosted: igStatus === "Posted" && ytStatus === "Posted",
+        isPending: igStatus !== "Posted" || ytStatus !== "Posted",
+      };
+    });
+
+    // 1. Fetch Instagram Profile Details
+    let igProfile = null;
+    try {
+      const igRes = await axios.get(`https://graph.facebook.com/v23.0/${process.env.IG_ID}`, {
+        params: {
+          fields: "id,username,name,followers_count,media_count,profile_picture_url",
+          access_token: process.env.META_TOKEN,
+        },
+        timeout: 4000,
+      });
+      igProfile = igRes.data;
+    } catch (igErr) {
+      console.warn("Could not fetch Instagram profile metrics:", igErr.message);
+    }
+
+    // 2. Fetch YouTube Channel Details
+    let ytProfile = null;
+    try {
+      const youtube = getYouTubeClient();
+      const ytRes = await youtube.channels.list({
+        part: "snippet,statistics",
+        mine: true,
+      });
+      if (ytRes.data.items && ytRes.data.items.length > 0) {
+        const item = ytRes.data.items[0];
+        ytProfile = {
+          id: item.id,
+          title: item.snippet.title,
+          customUrl: item.snippet.customUrl,
+          thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
+          subscribers: Number(item.statistics.subscriberCount).toLocaleString(),
+          views: Number(item.statistics.viewCount).toLocaleString(),
+          videoCount: Number(item.statistics.videoCount).toLocaleString(),
+        };
+      }
+    } catch (ytErr) {
+      console.warn("Could not fetch YouTube channel metrics:", ytErr.message);
+    }
+
+    res.render("dashboard", {
+      total,
+      instaPending,
+      ytPending,
+      reelsList,
+      igProfile,
+      ytProfile,
+    });
+  } catch (err) {
+    console.error("Dashboard render error:", err);
+    res.status(500).send("Error loading dashboard: " + err.message);
+  }
 });
 
 // Post Page
@@ -350,6 +418,7 @@ app.get("/next", (req, res) => {
 
 app.get("/api/next-reel", async (req, res) => {
   try {
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
     const reel = await getNextUpcomingReel();
     if (!reel) return res.json({ reel: null });
 
@@ -426,6 +495,108 @@ function getYouTubeClient() {
 
   return google.youtube({ version: "v3", auth: oauth2Client });
 }
+
+// Local avatar proxy to ensure YouTube avatar displays reliably without browser/referrer blocking
+app.get("/api/youtube-avatar", async (req, res) => {
+  try {
+    const youtube = getYouTubeClient();
+    const ytRes = await youtube.channels.list({
+      part: "snippet",
+      mine: true,
+    });
+    const avatarUrl = ytRes.data.items?.[0]?.snippet?.thumbnails?.medium?.url;
+    if (!avatarUrl) return res.status(404).send("No avatar found");
+
+    const imageStream = await axios({
+      url: avatarUrl,
+      method: "GET",
+      responseType: "stream",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      }
+    });
+
+    res.set("Content-Type", imageStream.headers["content-type"] || "image/jpeg");
+    res.set("Cache-Control", "public, max-age=86400");
+    imageStream.data.pipe(res);
+  } catch (err) {
+    res.status(500).send("Avatar fetch error: " + err.message);
+  }
+});
+
+// Route to initiate YouTube OAuth login
+app.get("/auth/youtube", (req, res) => {
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.YOUTUBE_CLIENT_ID,
+    process.env.YOUTUBE_CLIENT_SECRET,
+    "http://localhost:5000/oauth2callback"
+  );
+
+  const authUrl = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    prompt: "consent",
+    scope: [
+      "https://www.googleapis.com/auth/youtube.upload",
+      "https://www.googleapis.com/auth/youtube",
+    ],
+  });
+
+  res.redirect(authUrl);
+});
+
+// OAuth2 Callback endpoint to receive authorization code and save permanent refresh token
+app.get("/oauth2callback", async (req, res) => {
+  const code = req.query.code;
+  if (!code) {
+    return res.status(400).send("No authorization code returned.");
+  }
+
+  try {
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.YOUTUBE_CLIENT_ID,
+      process.env.YOUTUBE_CLIENT_SECRET,
+      "http://localhost:5000/oauth2callback"
+    );
+
+    const { tokens } = await oauth2Client.getToken(code);
+
+    if (tokens.refresh_token) {
+      process.env.YOUTUBE_REFRESH_TOKEN = tokens.refresh_token;
+
+      // Update .env file permanently
+      const envPath = path.join(__dirname, ".env");
+      let envContent = fs.readFileSync(envPath, "utf8");
+      if (envContent.includes("YOUTUBE_REFRESH_TOKEN=")) {
+        envContent = envContent.replace(
+          /YOUTUBE_REFRESH_TOKEN=.*/,
+          `YOUTUBE_REFRESH_TOKEN=${tokens.refresh_token}`
+        );
+      } else {
+        envContent += `\nYOUTUBE_REFRESH_TOKEN=${tokens.refresh_token}\n`;
+      }
+      fs.writeFileSync(envPath, envContent, "utf8");
+
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head><title>YouTube Connected</title></head>
+        <body style="margin:0;padding:50px;background:#0b1120;color:#f8fafc;font-family:sans-serif;display:flex;justify-content:center;">
+          <div style="max-width:480px;background:#111a2e;border:1px solid #233046;padding:32px;border-radius:16px;text-align:center;">
+            <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+            <h1 style="color:#22d3ee;margin:0 0 12px 0;">YouTube Connected!</h1>
+            <p style="color:#94a3b8;font-size:15px;line-height:1.6;">Your permanent refresh token has been created and saved directly to your <code>.env</code> file.</p>
+            <a href="/next" style="display:inline-block;margin-top:20px;padding:12px 24px;background:#22d3ee;color:#0b1120;font-weight:bold;border-radius:10px;text-decoration:none;">🚀 Go to Next Upload</a>
+          </div>
+        </body>
+        </html>
+      `);
+    } else {
+      return res.send("⚠️ No refresh token was returned by Google. Please ensure prompt=consent is used.");
+    }
+  } catch (err) {
+    return res.status(500).send("Error connecting to YouTube: " + err.message);
+  }
+});
 
 // Legacy single-platform trigger, kept for manual/API use — the "Next Upload" page uses
 // POST /api/upload-reel instead, which posts to both platforms in one call.
