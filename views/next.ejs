@@ -331,9 +331,16 @@
         return;
       }
 
-      if (data.instagram?.skipped) log("ℹ️ Instagram: already published, skipped.");
-      else if (data.instagram?.success) log("✅ Instagram Reel: published successfully! Post ID: " + data.instagram.postId);
-      else log("❌ Instagram: " + data.instagram?.error);
+      if (data.instagram?.skipped) {
+        log("ℹ️ Instagram: already published, skipped.");
+      } else if (data.instagram?.success) {
+        log("✅ Instagram Reel: published successfully! Post ID: " + data.instagram.postId);
+      } else {
+        log("❌ Instagram: " + data.instagram?.error);
+        if (data.instagram?.error && (data.instagram.error.includes("Firewall") || data.instagram.error.includes("Sophos") || data.instagram.error.includes("certificate"))) {
+          log("💡 Quick Fix: Your network firewall is blocking Instagram. Switch to a Mobile Hotspot or VPN, then click 'Retry Pending Platform'.");
+        }
+      }
 
       if (data.youtube?.skipped) log("ℹ️ YouTube: already published, skipped.");
       else if (data.youtube?.success) log("✅ YouTube Short: published successfully! Video ID: " + data.youtube.videoId);

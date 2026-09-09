@@ -183,6 +183,34 @@ function buildVideoUrls(fileName) {
   };
 }
 
+function formatInstagramError(err) {
+  if (
+    err.response?.data &&
+    typeof err.response.data === "string" &&
+    (err.response.data.includes("Sophos") ||
+      err.response.data.includes("website is blocked") ||
+      err.response.data.includes("Social Networking"))
+  ) {
+    return "Network Firewall Block: Your network firewall (Sophos at 192.168.0.199) is actively blocking Meta/Instagram ('Social Networking' category). Fix: Switch to Mobile Hotspot / VPN, or login at https://192.168.0.199:8090";
+  }
+
+  const msg = err.message || "";
+  const code = err.code || "";
+  if (
+    code === "UNABLE_TO_VERIFY_LEAF_SIGNATURE" ||
+    msg.includes("unable to verify the first certificate") ||
+    msg.includes("self-signed certificate")
+  ) {
+    return "Network Firewall SSL Interception Block: graph.facebook.com is being intercepted/blocked by your network firewall (Sophos). Fix: Switch to Mobile Hotspot, connect to a VPN (e.g. Cloudflare WARP), or login to your network portal (https://192.168.0.199:8090).";
+  }
+
+  if (err.response?.data?.error?.message) {
+    return err.response.data.error.message;
+  }
+
+  return msg || "Unknown Instagram API error";
+}
+
 // ---------- Reusable upload actions (used by both the manual routes and the combined "upload to both" action) ----------
 
 async function uploadReelToInstagram(reel) {
@@ -249,7 +277,7 @@ async function uploadReelToInstagram(reel) {
   } catch (err) {
     return {
       success: false,
-      error: err.response?.data?.error?.message || err.message,
+      error: formatInstagramError(err),
     };
   }
 }
@@ -451,7 +479,7 @@ async function directUploadToInstagram({ videoUrl, caption, onLog = () => {} }) 
   } catch (err) {
     return {
       success: false,
-      error: err.response?.data?.error?.message || err.message,
+      error: formatInstagramError(err),
     };
   }
 }
